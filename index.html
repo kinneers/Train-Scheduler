@@ -6,11 +6,77 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Train Scheduler</title>
     <link href="assets/css/reset.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="assets/css/style.css" type="text/css" rel="stylesheet">
 </head>
 <body>
-    
+    <div id="mainContent">
+        <!-- Jumbotron for the Heading -->
+        <div class="jumbotron">
+            <h1 class="display-4">Hello, world!</h1>
+            <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+            <hr class="my-4">
+            <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+            <p class="lead">
+            </p>
+        </div>
+
+        <!-- Table to display the data -->
+        <div class="card">
+            <h5 class="card-header">Current Train Schedule</h5>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Train Name</th>
+                            <th scope="col">Destination</th>
+                            <th scope="col">Frequency</th>
+                            <th scope="col">Next Arrival</th>
+                            <th scope="col">Minutes Away</th>
+                        </tr>
+                    </thead>
+                    <tbody id="well">
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Form to input new train -->
+        <div class="card">
+            <h5 class="card-header">Add A Train</h5>
+            <div class="card-body">
+                <form>
+                    <div class="form-group">
+                        <label for="trainName">Train Name</label>
+                        <input type="text" class="form-control" id="trainName" placeholder="Enter Train Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="destination">Destination</label>
+                        <input type="text" class="form-control" id="destination" placeholder="Enter Destination">
+                    </div>
+                    <div class="form-group">
+                        <label for="firstTrainTime">First Train Time (HH:mm- military time)</label>
+                        <input type="text" class="form-control" id="firstTrainTime" placeholder="HH:mm">
+                    </div>   
+                    <div class="form-group">
+                        <label for="frequency">Frequency (min)</label>
+                        <input type="text" class="form-control" id="frquency" placeholder="00">
+                    </div>    
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed-bottom text-right">
+        <footer>
+            <p>Copyright &copy; 2019 Sarah Kinneer</p>
+        </footer>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/5.7.2/firebase.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.23.0/moment.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="assets/js/javascript.js"></script>
 </body>
