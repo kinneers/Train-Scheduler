@@ -8,23 +8,39 @@ $(document).ready(function() {
         storageBucket: "",
         messagingSenderId: "1010701429657"
     };
-    
     firebase.initializeApp(config);
     
+    //Set database reference
     var database = firebase.database();
 
     //Initial Values
-    var trainName = '';
-    var destination = '';
+    var trainName;
+    var destination;
     var firstTrainTime;
-    var frequency = 0;
+    var frequency;
     var nextTrain;
-    var minutesAway = '';
+    var minutesAway;
 
-/*
-Regex for form validation of military time:   ^([01]\d|2[0-3]):?([0-5]\d)$
-https://mdbootstrap.com/docs/jquery/forms/validation/
-*/
+    function calculateValues(trainTime, freq) {
+        /*This function uses the first train time and frequency to calculate the next arrival time and
+        minutes away.  The values for the next arrival and minutes away are NOT saved in the Firebase
+        database, as they are dependent upon the current call time.*/
+        //Get Current Time
+        var currentTime = moment(currentTime).format('HH:mm')
+        // First Time (pushed back 1 year to make sure it comes before current time)
+        var firstTimeConverted = moment(trainTime, 'HH:mm').subtract(1, 'years');
+        //console.log(firstTimeConverted);
+        // Difference between the times
+        var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+        // Time apart (remainder)
+        var tRemainder = diffTime % freq;
+        //Number of minutes away
+        minutesAway = freq - tRemainder;
+        //Arrival time of next train
+        nextTrain = moment().add(minutesAway, "minutes");
+        nextTrain = moment(nextTrain._d).format('HH:mm');
+    }
+
     //Capture Submit Button
     $('#addTrain').on('click', function(event) {
         event.preventDefault();
@@ -39,89 +55,54 @@ https://mdbootstrap.com/docs/jquery/forms/validation/
         firstTrainTime = $('#firstTrainTime').val().trim();
         frequency = $('#frequency').val().trim();
         
-        //Get Current Time
-        var currentTime = moment(currentTime).format('HH:mm')
-        console.log(currentTime);
-        // First Time (pushed back 1 year to make sure it comes before current time)
-        var firstTimeConverted = moment(firstTrainTime, 'HH:mm').subtract(1, 'years');
-        //console.log(firstTimeConverted);
-        console.log(firstTimeConverted);
-        // Difference between the times
-        var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
-        console.log("DIFFERENCE IN TIME: " + diffTime);
-        // Time apart (remainder)
-        var tRemainder = diffTime % frequency;
-        console.log(tRemainder);
-        //Number of minutes away
-        minutesAway = frequency - tRemainder;
-        console.log("MINUTES TILL TRAIN: " + minutesAway);
-        //Arrival time of next train
-        nextTrain = moment().add(minutesAway, "minutes");
-        console.log("ARRIVAL TIME: " + moment(nextTrain).format("HH:mm"));
-        console.log(nextTrain._d);
-        nextTrain = nextTrain._d;
+        //Function to calculate arrival time and minutes away
+        calculateValues(firstTrainTime, frequency);
         
+        //Push new train to the Firebase Database
         database.ref().push({
             trainName,
             destination,
             firstTrainTime,
             frequency,
-            nextTrain,
-            minutesAway,
             dateAdded: firebase.database.ServerValue.TIMESTAMP
         });
-        
     });
-
 
     // Firebase watcher + initial loader
     database.ref().on("child_added", function(childSnapshot) {
 
-        // Log everything that's coming out of snapshot
-        console.log(childSnapshot.val().trainName);
-        console.log(childSnapshot.val().destination);
-        console.log(childSnapshot.val().firstTrainTime);
-        console.log(childSnapshot.val().frequency);
-        console.log(childSnapshot.val().dateAdded);
-        console.log(childSnapshot.val().minutesAway);
-        console.log(nextTrain);
+        //Function to calculate new arrival times and minutes away
+        calculateValues(childSnapshot.val().firstTrainTime, childSnapshot.val().frequency);
 
-        //Get Current Time
-        var newCurrentTime = moment(newCurrentTime).format('HH:mm')
-        console.log(newCurrentTime);
-        // First Time (pushed back 1 year to make sure it comes before current time)
-        var newFirstTimeConverted = moment(childSnapshot.val().firstTrainTime, 'HH:mm').subtract(1, 'years');
-        //console.log(firstTimeConverted);
-        console.log(newFirstTimeConverted);
-        // Difference between the times
-        var newDiffTime = moment().diff(moment(newFirstTimeConverted), "minutes");
-        console.log("DIFFERENCE IN TIME: " + newDiffTime);
-        // Time apart (remainder)
-        var newTRemainder = newDiffTime % childSnapshot.val().frequency;
-        console.log(newTRemainder);
-        //Number of minutes away
-        var newMinutesAway = childSnapshot.val().frequency - newTRemainder;
-        console.log("MINUTES TILL TRAIN: " + newMinutesAway);
-        //Arrival time of next train
-        var newNextTrain = moment().add(newMinutesAway, "minutes");
-        console.log("ARRIVAL TIME: " + moment(newNextTrain).format("HH:mm"));
-        console.log(newNextTrain._d);
-        newNextTrain = newNextTrain._d;
-
+        //Appends current values to the page and adds update and remove buttons
         $('#well').append(
-            `<tr>
+            `<tr id="${childSnapshot.val().trainName}">
                 <td>${childSnapshot.val().trainName}</td>
                 <td>${childSnapshot.val().destination}</td>
                 <td>${childSnapshot.val().frequency}</td>
-                <td>${newNextTrain}</td>
-                <td>${newMinutesAway}</td>
+                <td>${nextTrain}</td>
+                <td>${minutesAway}</td>
+                <td><button id="${childSnapshot.val().trainName}" class="update btn btn-primary">Update</button><td>
+                <td><button id="${childSnapshot.val().trainName}" class="remove btn btn-danger">Remove</button><td>
             <tr>`
+            /*Note that the button ids for update and remove and tr are all the same- this needs to be corrected*/
         )
     // Handle the errors
     }, function(errorObject) {
-        console.log("Errors handled: " + errorObject.code);
+        console.log("Errors handled: " + errorObject.code);    
     });
-        
+
+    //Adds an event listener to the parent of the update and remove buttons
+    var theParent = document.querySelector("#well");
+    theParent.addEventListener("click", findButton, false);
+
+    function findButton(e) {
+        if (e.target !== e.currentTarget) {
+            var clickedItem = e.target;
+            console.log(clickedItem);
+        }
+    e.stopPropagation();
+    }
     /*
     ADAPT TO PUT THE ROWS IN CHRONOLOGICAL ORDER
     dataRef.ref().orderByChild("dateAdded").limitToLast(1).on("child_added", function(snapshot) {
