@@ -19,7 +19,7 @@ $(document).ready(function() {
     var firstTrainTime;
     var frequency = 0;
     var nextTrain;
-    var minutesAway = 0;
+    var minutesAway = '';
 
 /*
 Regex for form validation of military time:   ^([01]\d|2[0-3]):?([0-5]\d)$
@@ -37,39 +37,42 @@ https://mdbootstrap.com/docs/jquery/forms/validation/
         trainName = $('#trainName').val().trim();
         destination = $('#destination').val().trim();
         firstTrainTime = $('#firstTrainTime').val().trim();
-        frequency = $('#frequency').val().trim();  
+        frequency = $('#frequency').val().trim();
+        
+        //Get Current Time
+        var currentTime = moment(currentTime).format('HH:mm')
+        console.log(currentTime);
+        // First Time (pushed back 1 year to make sure it comes before current time)
+        var firstTimeConverted = moment(firstTrainTime, 'HH:mm').subtract(1, 'years');
+        //console.log(firstTimeConverted);
+        console.log(firstTimeConverted);
+        // Difference between the times
+        var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+        console.log("DIFFERENCE IN TIME: " + diffTime);
+        // Time apart (remainder)
+        var tRemainder = diffTime % frequency;
+        console.log(tRemainder);
+        //Number of minutes away
+        minutesAway = frequency - tRemainder;
+        console.log("MINUTES TILL TRAIN: " + minutesAway);
+        //Arrival time of next train
+        nextTrain = moment().add(minutesAway, "minutes");
+        console.log("ARRIVAL TIME: " + moment(nextTrain).format("HH:mm"));
+        console.log(nextTrain._d);
+        nextTrain = nextTrain._d;
         
         database.ref().push({
             trainName,
             destination,
             firstTrainTime,
             frequency,
+            nextTrain,
+            minutesAway,
             dateAdded: firebase.database.ServerValue.TIMESTAMP
         });
         
     });
 
-    /*Not Sure why this is failing- I think I need to manually manipulate the data within the database itself...
-    //Get Current Time
-    var currentTime = moment(currentTime).format('HH:mm')
-    console.log(currentTime);
-    // First Time (pushed back 1 year to make sure it comes before current time)
-    var firstTimeConverted = moment(firstTrainTime, 'HH:mm').subtract(1, 'years');
-    console.log(firstTimeConverted);
-    console.log(firstTrainTime);
-    // Difference between the times
-    var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
-    console.log("DIFFERENCE IN TIME: " + diffTime);
-    // Time apart (remainder)
-    var tRemainder = diffTime % frequency;
-    console.log(tRemainder);
-    //Number of minutes away
-    minutesAway = frequency - tRemainder;
-    console.log("MINUTES TILL TRAIN: " + minutesAway);
-    //Arrival time of next train
-    nextTrain = moment().add(minutesAway, "minutes");
-    console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
-    */
 
     // Firebase watcher + initial loader
     database.ref().on("child_added", function(childSnapshot) {
@@ -80,14 +83,38 @@ https://mdbootstrap.com/docs/jquery/forms/validation/
         console.log(childSnapshot.val().firstTrainTime);
         console.log(childSnapshot.val().frequency);
         console.log(childSnapshot.val().dateAdded);
+        console.log(childSnapshot.val().minutesAway);
+        console.log(nextTrain);
+
+        //Get Current Time
+        var newCurrentTime = moment(newCurrentTime).format('HH:mm')
+        console.log(newCurrentTime);
+        // First Time (pushed back 1 year to make sure it comes before current time)
+        var newFirstTimeConverted = moment(childSnapshot.val().firstTrainTime, 'HH:mm').subtract(1, 'years');
+        //console.log(firstTimeConverted);
+        console.log(newFirstTimeConverted);
+        // Difference between the times
+        var newDiffTime = moment().diff(moment(newFirstTimeConverted), "minutes");
+        console.log("DIFFERENCE IN TIME: " + newDiffTime);
+        // Time apart (remainder)
+        var newTRemainder = newDiffTime % childSnapshot.val().frequency;
+        console.log(newTRemainder);
+        //Number of minutes away
+        var newMinutesAway = childSnapshot.val().frequency - newTRemainder;
+        console.log("MINUTES TILL TRAIN: " + newMinutesAway);
+        //Arrival time of next train
+        var newNextTrain = moment().add(newMinutesAway, "minutes");
+        console.log("ARRIVAL TIME: " + moment(newNextTrain).format("HH:mm"));
+        console.log(newNextTrain._d);
+        newNextTrain = newNextTrain._d;
 
         $('#well').append(
             `<tr>
                 <td>${childSnapshot.val().trainName}</td>
                 <td>${childSnapshot.val().destination}</td>
                 <td>${childSnapshot.val().frequency}</td>
-                <td></td>
-                <td></td>
+                <td>${newNextTrain}</td>
+                <td>${newMinutesAway}</td>
             <tr>`
         )
     // Handle the errors
