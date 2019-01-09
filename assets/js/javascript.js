@@ -126,8 +126,7 @@ $(document).ready(function() {
             else if (clickedItem.id === 'remove') {
                 console.log(clickedItem);
                 database.ref(clickedItem.value).remove();
-                $('#well').load('https://kinneers.github.io/Train-Scheduler.index.html #well');
-
+                $('#well').load('https://kinneers.github.io/https://kinneers.github.io/Train-Scheduler/ #well');
             }
             else {
                 console.log ("Error");
@@ -142,6 +141,7 @@ $(document).ready(function() {
         console.log(childSnapshot);
         //$('#well').load('https://kinneers.github.io/Train-Scheduler.index.html #well');
         //var removalId = childSnapshot.
+        $('#well').load('https://kinneers.github.io/Train-Scheduler.index.html #well');
 
         //==$('#well').remove(childSnapshot);
         
