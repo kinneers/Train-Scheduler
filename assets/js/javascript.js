@@ -126,7 +126,7 @@ $(document).ready(function() {
             else if (clickedItem.id === 'remove') {
                 console.log(clickedItem);
                 database.ref(clickedItem.value).remove();
-                $('#well').load('https://kinneers.github.io/https://kinneers.github.io/Train-Scheduler/ #well');
+                $('#well').load('https://kinneers.github.io/Train-Scheduler/ #well');
             }
             else {
                 console.log ("Error");
@@ -134,22 +134,6 @@ $(document).ready(function() {
         }
     event.stopPropagation();
     }
-
-
-    //Repopulates the chart when data is updated or removed from the database
-    database.ref().on('child_removed', function(childSnapshot) {
-        console.log(childSnapshot);
-        //$('#well').load('https://kinneers.github.io/Train-Scheduler.index.html #well');
-        //var removalId = childSnapshot.
-        $('#well').load('https://kinneers.github.io/Train-Scheduler.index.html #well');
-
-        //==$('#well').remove(childSnapshot);
-        
-    // Handle the errors
-    }, function(errorObject) {
-        console.log("Errors handled: " + errorObject.code);    
-    });
-
 
     /*
     ADAPT TO PUT THE ROWS IN CHRONOLOGICAL ORDER
