@@ -56,6 +56,11 @@ $(document).ready(function() {
         nextTrain = moment(nextTrain._d).format('HH:mm');
     }
 
+    //Code to refresh the table every minute
+    setTimeout(function(){
+        $( "#well" ).load( "index.html #well" );
+     }, 60000); //refresh every minute
+
     //Capture Submit Button
     $('#addTrain').on('click', function(event) {
         event.preventDefault();
@@ -126,7 +131,6 @@ $(document).ready(function() {
             else if (clickedItem.id === 'remove') {
                 console.log(clickedItem);
                 database.ref(clickedItem.value).remove();
-                $('#well').load('https://kinneers.github.io/Train-Scheduler/ #well');
             }
             else {
                 console.log ("Error");
@@ -134,6 +138,15 @@ $(document).ready(function() {
         }
     event.stopPropagation();
     }
+
+    //Function to update DOM when child is removed from Firebase DB
+    database.ref().on("child_removed", function(childSnapshot) {
+        //Removes associated table row from the DOM
+        $('#' + childSnapshot.key).remove();
+    // Handle the errors
+    }, function(errorObject) {
+        console.log("Errors handled: " + errorObject.code);    
+    });
 
     /*
     ADAPT TO PUT THE ROWS IN CHRONOLOGICAL ORDER
