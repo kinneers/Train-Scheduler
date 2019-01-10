@@ -58,7 +58,7 @@ $(document).ready(function() {
 
     //Code to refresh the table every minute
     setTimeout(function(){
-        $( "#well" ).load( "index.html #well" );
+        $( "#well" ).load("https://kinneers.github.io/Train-Scheduler/ #well");
      }, 60000); //refresh every minute
 
     //Capture Submit Button
