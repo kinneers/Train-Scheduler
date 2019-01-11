@@ -46,19 +46,19 @@
                 <form>
                     <div class="form-group">
                         <label for="trainName">Train Name</label>
-                        <input type="text" class="form-control" id="trainName" placeholder="Enter Train Name">
+                        <input type="text" class="form-control" id="trainName" placeholder="Enter Train Name" required>
                     </div>
                     <div class="form-group">
                         <label for="destination">Destination</label>
-                        <input type="text" class="form-control" id="destination" placeholder="Enter Destination">
+                        <input type="text" class="form-control" id="destination" placeholder="Enter Destination" required>
                     </div>
                     <div class="form-group">
                         <label for="firstTrainTime">First Train Time (HH:mm- military time)</label>
-                        <input type="text" class="form-control" id="firstTrainTime" placeholder="HH:mm">
+                        <input type="text" class="form-control" id="firstTrainTime" placeholder="HH:mm" required>
                     </div>   
                     <div class="form-group">
                         <label for="frequency">Frequency (min)</label>
-                        <input type="text" class="form-control" id="frequency" placeholder="00">
+                        <input type="integer" class="form-control" id="frequency" placeholder="00" required>
                     </div>    
                     <button type="submit" id ="addTrain" class="btn btn-primary">Submit</button>
                 </form>
@@ -66,7 +66,7 @@
         </div>
     </div>
 
-    <div class="fixed-bottom text-right">
+    <div class="text-center">
         <footer>
             <p>Copyright &copy; 2019 Sarah Kinneer; Photo by <a href="https://www.pexels.com/@pixabay">Pixabay</a> on <a href="https://www.pexels.com/">Pexels</a></p>
         </footer>
