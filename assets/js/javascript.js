@@ -92,18 +92,29 @@ $(document).ready(function() {
         nextTrain = moment(nextTrain._d).format('MM/DD/YY @ hh:mm a');
     }
 
-    //ATTENOTUNG TO UPDATE PAGE EACH MINUTE (NOT WORKING... YET)
+    //ATTEMPTUNG TO UPDATE PAGE EACH MINUTE (NOT WORKING... YET)
     //Interval to refresh page data
-    //setInterval(refreshTable, 60000);
+    setInterval(updateValues, 60000);
 
-    //database.ref().on("value", refreshTable(childSnapshot) {
-
-    //    calculateValues(latestSnapshot.val().firstTrainTime, latestSnapshot.val().frequency);
-      //  console.log("check for changes");
-    //}
+    function updateValues() {
+        database.ref().on("value", function(childSnapshot) {
+            console.log(childSnapshot.key);
+            //Function to calculate new arrival times and minutes away
+            calculateValues(childSnapshot.key.val().firstTrainTime, childSnapshot.key.val().frequency);
     
+            //Updates calculated values on the page
+            $('.nextTrain').text(nextTrain);
+            $('.minutesAway').text(minutesAway);
 
-    //Capture Submit Button
+        // Handle the errors
+        }, function(errorObject) {
+            console.log("Errors handled: " + errorObject.code);    
+        });
+    
+    } 
+
+
+    //Capture Submit Button to add a new train
     $('#addTrain').on('click', function(event) {
         event.preventDefault();
 
@@ -134,15 +145,7 @@ $(document).ready(function() {
             $('#frequency').val('');
         }
         else {
-            //Add a modal to indicate that a field needs valid input
-
-
-
-
-
-
-            
-            console.log("Error");
+            alert("Please check that you have correct inputs in the form fields!");
         }
     });
 
@@ -157,10 +160,10 @@ $(document).ready(function() {
             `<tr id="${childSnapshot.key}">
                 <td>${childSnapshot.val().trainName}</td>
                 <td>${childSnapshot.val().destination}</td>
-                <td>${childSnapshot.val().frequency}</td>
-                <td>${nextTrain}</td>
-                <td>${minutesAway}</td>
-                <td><button id="update" type="button" value="${childSnapshot.key}" class="update btn btn-primary">Update</button><td>
+                <td class="frequency">${childSnapshot.val().frequency}</td>
+                <td class="nextTrain">${nextTrain}</td>
+                <td class="minutesAway">${minutesAway}</td>
+            <!-- <td><button id="update" type="button" value="${childSnapshot.key}" class="update btn btn-primary">Update</button><td> -->
                 <td><button id="remove" value="${childSnapshot.key}" class="remove btn btn-danger">Remove</button><td>
             <tr>`
         )
