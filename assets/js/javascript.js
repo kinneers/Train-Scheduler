@@ -13,8 +13,7 @@ Harry Potter did, in fact, leave from Platform 9 and 3/4 on the Hogwarts Express
 
 Spoiler Alert: The Little Engine that Could DOES make it to the top of the mountian.
 
-The Polar Express' Frequency is actually every 525600 minutes... but the frequency given was
-calculated in order for it to arrive Christmas Eve.
+The Polar Express' next arrival time is hardcoded in as it only comes once a year.
 */
 
 $(document).ready(function() {
@@ -113,7 +112,6 @@ $(document).ready(function() {
     
     } 
 
-
     //Capture Submit Button to add a new train
     $('#addTrain').on('click', function(event) {
         event.preventDefault();
@@ -152,8 +150,13 @@ $(document).ready(function() {
     // Firebase watcher + initial loader
     database.ref().on("child_added", function(childSnapshot) {
         console.log(childSnapshot.key);
+
         //Function to calculate new arrival times and minutes away
         calculateValues(childSnapshot.val().firstTrainTime, childSnapshot.val().frequency);
+
+        if (childSnapshot.val().trainName === "The Polar Express") {
+            nextTrain = moment('12/25/2019 00:00').format('12/25/2019 @ 12:00 a');
+        }
 
         //Appends current values to the page and adds update and remove buttons
         $('#well').append(
@@ -163,7 +166,7 @@ $(document).ready(function() {
                 <td class="frequency">${childSnapshot.val().frequency}</td>
                 <td class="nextTrain">${nextTrain}</td>
                 <td class="minutesAway">${minutesAway}</td>
-            <!-- <td><button id="update" type="button" value="${childSnapshot.key}" class="update btn btn-primary">Update</button><td> -->
+                <td><button id="update" type="button" value="${childSnapshot.key}" class="update btn btn-primary">Update</button><td>
                 <td><button id="remove" value="${childSnapshot.key}" class="remove btn btn-danger">Remove</button><td>
             <tr>`
         )
