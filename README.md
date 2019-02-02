@@ -4,7 +4,7 @@ A train schedule application incorporating Firebase to host data and utilizing M
 ## Developed by: Sarah Kinneer
 ## January, 2019
 
-![alt text](assets/images/trains.png)
+![Photo of the Train-Scheduler App](assets/images/trains.png)
 
 ## Technologies Used:
 JavaScript, jQuery, Bootstrap, Moment.js, Firebase

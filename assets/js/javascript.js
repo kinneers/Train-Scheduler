@@ -1,6 +1,6 @@
 /*
 Developer: Sarah Kinneer
-Title: Trivia Game
+Title: Train Scheduler
 Description: Train Scheduler (JavaScript, JQuery, Moment.js, Firebase)
 Date: 1/6/2019
 
@@ -31,10 +31,11 @@ $(document).ready(function() {
     //Set database reference
     var database = firebase.database();
 
-    /*  ATTEMPTING TO AUTHORIZE USERS
+    
+
+        /*  ATTEMPTING TO AUTHORIZE USERS
     var provider = new firebase.auth.GithubAuthProvider();
     firebase.auth().signInWithRedirect(provider);
-
     firebase.auth().getRedirectResult().then(function(result) {
         if (result.credential) {
           // This gives you a GitHub Access Token. You can use it to access the GitHub API.
@@ -53,7 +54,6 @@ $(document).ready(function() {
         var credential = error.credential;
         // ...
       });
-
       firebase.auth().signOut().then(function() {
         // Sign-out successful.
       }).catch(function(error) {
@@ -69,7 +69,9 @@ $(document).ready(function() {
     var nextTrain;
     var minutesAway;
     var clickedItem;
+    var trainKeyArray = [];
     var regExTime = /^([01]\d|2[0-3]):?([0-5]\d)$/;
+    var checkSpecial;
 
     function calculateValues(trainTime, freq) {
         /*This function uses the first train time and frequency to calculate the next arrival time and
@@ -91,29 +93,37 @@ $(document).ready(function() {
         nextTrain = moment(nextTrain._d).format('MM/DD/YY @ hh:mm a');
     }
 
-    //ATTEMPTUNG TO UPDATE PAGE EACH MINUTE (NOT WORKING... YET)
+    //ATTEMPTING TO UPDATE PAGE EACH MINUTE (NOT WORKING... YET)
     //Interval to refresh page data
     setInterval(updateValues, 60000);
 
-    function updateValues() {
-        database.ref().on("value", function(childSnapshot) {
-            console.log(childSnapshot.key);
-            //Function to calculate new arrival times and minutes away
-            calculateValues(childSnapshot.key.val().firstTrainTime, childSnapshot.key.val().frequency);
-    
-            //Updates calculated values on the page
-            $('.nextTrain').text(nextTrain);
-            $('.minutesAway').text(minutesAway);
+    var updateFirstTrainTime = [];
+    var updateFrequency = [];
 
-        // Handle the errors
-        }, function(errorObject) {
-            console.log("Errors handled: " + errorObject.code);    
-        });
-    
+    //Updates the values for nextTrain and minutesAway
+    function updateValues() {
+        console.log('The function has run');
+        for (var i = 0; i < trainKeyArray.length; i++) {
+            var time = updateFirstTrainTime[i];
+            console.log(time);
+            var updateFreq = updateFrequency[i];
+            console.log(updateFreq);
+            calculateValues(time, updateFreq);
+
+            //Ensures that The Polar Express remains hard-coded
+            var checkForSpecial = trainKeyArray[i]
+            if (checkSpecial === checkForSpecial) {
+                nextTrain = moment('2019-12-25T00:00:00Z').format('12/25/2019 @ 12:00 a');
+            }
+
+            //Adds updated values to the page
+            $('#'+ trainKeyArray[i] + ' .nextTrain').text(nextTrain);
+            $('#'+ trainKeyArray[i] + ' .minutesAway').text(minutesAway);
+        }
     } 
 
     //Capture Submit Button to add a new train
-    $('#addTrain').on('click', function(event) {
+    $('#addTrain').on('click tap', function(event) {
         event.preventDefault();
 
         //Set the values for the most recent train added
@@ -149,13 +159,19 @@ $(document).ready(function() {
 
     // Firebase watcher + initial loader
     database.ref().on("child_added", function(childSnapshot) {
-        console.log(childSnapshot.key);
+        //Gather values required by update function to update next arrival and minutes away each minute
+        updateFirstTrainTime.push(childSnapshot.val().firstTrainTime);
+        updateFrequency.push(childSnapshot.val().frequency);
+        trainKeyArray.push(childSnapshot.key);
+        console.log(updateFirstTrainTime, updateFrequency, trainKeyArray);
 
         //Function to calculate new arrival times and minutes away
         calculateValues(childSnapshot.val().firstTrainTime, childSnapshot.val().frequency);
 
         if (childSnapshot.val().trainName === "The Polar Express") {
-            nextTrain = moment('12/25/2019 00:00').format('12/25/2019 @ 12:00 a');
+            nextTrain = moment('2019-12-25T00:00:00Z').format('12/25/2019 @ 12:00 a');
+            checkSpecial = childSnapshot.key;
+            console.log("Check Special is: " + checkSpecial);
         }
 
         //Appends current values to the page and adds update and remove buttons
@@ -166,7 +182,7 @@ $(document).ready(function() {
                 <td class="frequency">${childSnapshot.val().frequency}</td>
                 <td class="nextTrain">${nextTrain}</td>
                 <td class="minutesAway">${minutesAway}</td>
-                <td><button id="update" type="button" value="${childSnapshot.key}" class="update btn btn-primary">Update</button><td>
+            <!-- <td><button id="update" type="button" value="${childSnapshot.key}" class="update btn btn-primary">Update</button><td> -->
                 <td><button id="remove" value="${childSnapshot.key}" class="remove btn btn-danger">Remove</button><td>
             <tr>`
         )
@@ -194,7 +210,7 @@ $(document).ready(function() {
                 console.log ("Error");
             }
         }
-    event.stopPropagation();
+        event.stopPropagation();
     }
 
     //Function to update DOM when child is removed from Firebase DB
