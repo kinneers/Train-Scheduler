@@ -93,7 +93,7 @@ $(document).ready(function() {
         nextTrain = moment(nextTrain._d).format('MM/DD/YY @ hh:mm a');
     }
 
-    //ATTEMPTING TO UPDATE PAGE EACH MINUTE (NOT WORKING... YET)
+    //UPDATES PAGE EACH MINUTE
     //Interval to refresh page data
     setInterval(updateValues, 60000);
 
@@ -182,7 +182,7 @@ $(document).ready(function() {
                 <td class="frequency">${childSnapshot.val().frequency}</td>
                 <td class="nextTrain">${nextTrain}</td>
                 <td class="minutesAway">${minutesAway}</td>
-            <!-- <td><button id="update" type="button" value="${childSnapshot.key}" class="update btn btn-primary">Update</button><td> -->
+            <!--<td><button id="update" type="button" value="${childSnapshot.key}" class="update btn btn-primary">Update</button><td>-->
                 <td><button id="remove" value="${childSnapshot.key}" class="remove btn btn-danger">Remove</button><td>
             <tr>`
         )
