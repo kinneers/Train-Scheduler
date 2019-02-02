@@ -9,6 +9,14 @@ A train schedule application incorporating Firebase to host data and utilizing M
 ## Technologies Used:
 JavaScript, jQuery, Bootstrap, Moment.js, Firebase
 
+## Link to Live Site:
+- [Schedule Some Trains!](https://kinneers.github.io/Train-Scheduler) - Head to the live site and play with the app!
+
+## To Use the Live Site:
+The user interface is fairly straightforward: 
+- To add a train, simply enter it's name, destination, first train time (in military time), and frequency in minutes- then click submit.
+- To remove a train from the list, simply click the 'remove' button at the end of that train's row.
+- Each minute, the Next Arrival time and Minutes Away columns will automatically update.
+
 ## Photograph Source:
 Many thanks to Pixabay on Pexels for beautiful, free stock images!
-
