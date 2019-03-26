@@ -26,40 +26,12 @@ $(document).ready(function() {
         storageBucket: "",
         messagingSenderId: "1010701429657"
     };
+    // eslint-disable-next-line no-undef
     firebase.initializeApp(config);
     
     //Set database reference
+    // eslint-disable-next-line no-undef
     var database = firebase.database();
-
-    
-
-        /*  ATTEMPTING TO AUTHORIZE USERS
-    var provider = new firebase.auth.GithubAuthProvider();
-    firebase.auth().signInWithRedirect(provider);
-    firebase.auth().getRedirectResult().then(function(result) {
-        if (result.credential) {
-          // This gives you a GitHub Access Token. You can use it to access the GitHub API.
-          var token = result.credential.accessToken;
-          // ...
-        }
-        // The signed-in user info.
-        var user = result.user;
-      }).catch(function(error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // The email of the user's account used.
-        var email = error.email;
-        // The firebase.auth.AuthCredential type that was used.
-        var credential = error.credential;
-        // ...
-      });
-      firebase.auth().signOut().then(function() {
-        // Sign-out successful.
-      }).catch(function(error) {
-        // An error happened.
-      });
-    */
 
     //Initial Values/Global Variables
     var trainName = '';
@@ -78,18 +50,23 @@ $(document).ready(function() {
         minutes away.  The values for the next arrival and minutes away are NOT saved in the Firebase
         database, as they are dependent upon the current call time.*/
         //Get Current Time
+        // eslint-disable-next-line no-undef
         var currentTime = moment(currentTime).format('HH:mm')
         // First Time (pushed back 1 year to make sure it comes before current time)
+        // eslint-disable-next-line no-undef
         var firstTimeConverted = moment(trainTime, 'HH:mm').subtract(1, 'years');
         //console.log(firstTimeConverted);
         // Difference between the times
+        // eslint-disable-next-line no-undef
         var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
         // Time apart (remainder)
         var tRemainder = diffTime % freq;
         //Number of minutes away
         minutesAway = freq - tRemainder;
         //Arrival time of next train
+        // eslint-disable-next-line no-undef
         nextTrain = moment().add(minutesAway, "minutes");
+        // eslint-disable-next-line no-undef
         nextTrain = moment(nextTrain._d).format('MM/DD/YY @ hh:mm a');
     }
 
@@ -102,17 +79,15 @@ $(document).ready(function() {
 
     //Updates the values for nextTrain and minutesAway
     function updateValues() {
-        console.log('The function has run');
         for (var i = 0; i < trainKeyArray.length; i++) {
             var time = updateFirstTrainTime[i];
-            console.log(time);
             var updateFreq = updateFrequency[i];
-            console.log(updateFreq);
             calculateValues(time, updateFreq);
 
             //Ensures that The Polar Express remains hard-coded
             var checkForSpecial = trainKeyArray[i]
             if (checkSpecial === checkForSpecial) {
+                // eslint-disable-next-line no-undef
                 nextTrain = moment('2019-12-25T00:00:00Z').format('12/25/2019 @ 12:00 a');
             }
 
@@ -143,6 +118,7 @@ $(document).ready(function() {
                 destination,
                 firstTrainTime,
                 frequency,
+                // eslint-disable-next-line no-undef
                 dateAdded: firebase.database.ServerValue.TIMESTAMP
             });
 
@@ -163,15 +139,15 @@ $(document).ready(function() {
         updateFirstTrainTime.push(childSnapshot.val().firstTrainTime);
         updateFrequency.push(childSnapshot.val().frequency);
         trainKeyArray.push(childSnapshot.key);
-        console.log(updateFirstTrainTime, updateFrequency, trainKeyArray);
 
         //Function to calculate new arrival times and minutes away
         calculateValues(childSnapshot.val().firstTrainTime, childSnapshot.val().frequency);
 
+        //Hardcodes midnight on Christmas Eve for the next arrival of The Polar Express
         if (childSnapshot.val().trainName === "The Polar Express") {
+            // eslint-disable-next-line no-undef
             nextTrain = moment('2019-12-25T00:00:00Z').format('12/25/2019 @ 12:00 a');
             checkSpecial = childSnapshot.key;
-            console.log("Check Special is: " + checkSpecial);
         }
 
         //Appends current values to the page and adds update and remove buttons
@@ -188,6 +164,7 @@ $(document).ready(function() {
         )
     // Handle the errors
     }, function(errorObject) {
+        // eslint-disable-next-line no-console
         console.log("Errors handled: " + errorObject.code);    
     });
 
@@ -199,6 +176,8 @@ $(document).ready(function() {
         if (event.target !== event.currentTarget) {
             clickedItem = event.target;
             if (clickedItem.id === 'update') {
+                //Keep for future development
+                // eslint-disable-next-line no-console
                 console.log("Update " + clickedItem.value);
                 //Add Function to Update Field
 
@@ -207,6 +186,7 @@ $(document).ready(function() {
                 database.ref(clickedItem.value).remove();
             }
             else {
+                // eslint-disable-next-line no-console
                 console.log ("Error");
             }
         }
@@ -219,6 +199,7 @@ $(document).ready(function() {
         $('#' + childSnapshot.key).remove();
     // Handle the errors
     }, function(errorObject) {
+        // eslint-disable-next-line no-console
         console.log("Errors handled: " + errorObject.code);    
     });
 });
